@@ -1,0 +1,61 @@
+{% load staticfiles %}
+<html>
+<head>
+<title> Let's Poll</title>
+	<link rel='stylesheet' type='text/css' href="{% static 'poll_detail_page/css/bootstrap.min.css' %}"/>
+	<link rel='stylesheet' type='text/css' href="{% static 'poll_detail_page/css/cover.css' %}"/>
+	<link rel='stylesheet' type='text/css' href="{% static 'poll_detail_page/css/button.css' %}"/>
+	<script src="{% static 'poll_detail_page/javascript/ie-emulation-modes-warning.js' %}"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="{% static 'poll_detail_page/javascript/bootstrap.min.js' %}"></script>
+	<script type="text/javascript">
+		function validateAndSubmit() {
+		    var option_selected = jQuery("input[name=poll_choice]:checked").val();
+		    console.log(option_selected)
+		    if(!option_selected){
+		        alert('Please tell us what you think!');
+		    }
+		    else{
+		        form_element = document.getElementById("poll_form");
+		        form_element.submit();
+		    }
+		}
+	</script>
+</head>
+
+<!-- <body bgcolor="#2e353f" text="#FFFFFF"> -->
+<body bgcolor="#ffffff" text="#FFFFFF">
+	<script type="text/javascript">
+        poll_data = '{{poll_data}}';
+        poll_data = poll_data.replace(/&quot;/ig, '"');
+        poll_data = poll_data.replace(/u&#39;/g, '"');
+        poll_data = poll_data.replace(/&#39;/g, '"');
+        
+        poll_data = JSON.parse(poll_data);
+        num_options = Object.keys(poll_data['options']).length;
+        console.log(num_options)
+		$(document).ready(function(){
+		    $("#question span").text(poll_data['question']);
+		    for(i=0;i<num_options;i++){
+		    	console.log(poll_data['options'][i]);
+		    	$("#options").append("<label class='btn btn-primary' style='width:280px;align:center'><input type='radio' id='option' name='poll_choice' autocomplete='off' value = " + poll_data['options'][i].id +" class='required'>" + poll_data['options'][i].answer_text + "</label><br>");
+		    }
+
+		});
+
+    </script>
+    <form class="form-inline" id="poll_form" action={% url 'record_user_choice' %} method="POST">
+    {% csrf_token %}
+	<div class="poll_card">
+		<center><div id="question">
+		<font face="verdana" size="4"><br><span>Which is the best English Football Team?</font></span></div></center>
+		<hr>
+		<br>
+		<div class="btn-group-vertical" data-toggle="buttons" id="options"></div>
+		<center><input class="myButton" type="button" id="btnSubmit" value="Vote" onclick="validateAndSubmit()">
+		<!-- <center><button id="click" class="myButton" onclick="button_click()">Vote</button> -->
+		</center>
+	</div>
+</form>
+</body>
+</html>

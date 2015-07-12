@@ -1,0 +1,39 @@
+{% load staticfiles %}
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script src='{% static "poll_detail_page/javascript/visualizations.js" %}'></script>
+		
+		<style type="text/css">
+${demo.css}
+		</style>
+		<script type="text/javascript">
+		vote_count = '{{vote_count}}';
+        vote_count = vote_count.replace(/&quot;/ig, '"');
+        vote_count = vote_count.replace(/u&#39;/g, '"');
+        vote_count = vote_count.replace(/&#39;/g, '"');
+        
+        vote_count = JSON.parse(vote_count);
+        question = vote_count['question']
+        data_array = [];
+        for(var option in vote_count['options']){
+            data_array.push([option, vote_count['options'][option]]);
+        }
+		$(document).ready(function(){
+			load_pie('#container',data_array,question);
+		});
+		</script>
+	</head>
+	<body bgcolor="#4f5762" text="#FFFFFF">
+	
+		<script src='{% static "poll_detail_page/javascript/highcharts.js" %}'></script>
+		<script src='{% static "poll_detail_page/javascript/highcharts-3d.js" %}'></script>
+		<script src='{% static "poll_detail_page/javascript/modules/exporting.js" %}'></script>
+
+		<div id="container" style="height: 400px"></div>
+	</body>
+</html>
