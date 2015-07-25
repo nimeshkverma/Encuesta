@@ -1,23 +1,134 @@
+{% load staticfiles %}
 <html>
 <head>
-    <title>Make Poll</title>
+<title> Let's Poll</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel='stylesheet' type='text/css' href="{% static 'create_polls/css/bootstrap-3.3.5.min.css' %}"/>
+    <link rel='stylesheet' type='text/css' href="{% static 'create_polls/css/cover.css' %}"/>
+    <link rel='stylesheet' type='text/css' href="{% static 'create_polls/css/button.css' %}"/>
+    <link rel='stylesheet' type='text/css' href="{% static 'create_polls/css/bootstrap-select.css' %}"/>
+ 
+    <style type="text/css">
+            * {
+          .border-radius(0) !important;
+        }
+
+        #field {
+            margin-bottom:20px;
+        }
+    </style>
+
+    <script src="{% static 'create_polls/javascript/ie-emulation-modes-warning.js' %}"></script>
+    <script src="{% static 'create_polls/javascript/bootstrap-3.3.5.min.js' %}"></script>
 </head>
-<body>
-    <form action="/create_polls/submit_poll/" method="post">
+<body class="body">
+    <input type="hidden" name="count" value="2" id="count"/>
+    <form action={% url 'submit_poll' %} method="POST">
         {% csrf_token %}
-        Question:<input type="text" name="question">
-        <br>
-        Descroption:<input type="text" name="question_text">
-        <br>
-        Option 1:<input type="text" name="option1">
-        <br>
-        Option 2:<input type="text" name="option2">
-        <br>
-        Option 3:<input type="text" name="option3">
-        <br>
-        Option 4:<input type="text" name="option4">
-        <br>
-        <input type="submit" value="Make Poll">
+        <input type="hidden" name="category" id="category"/>
+        <div class="question_form">
+            <br>
+            <div id="question_text">
+                <label for="question" style="float:left;width:20%">Question: </label><input type="text" name="question" class="form-control" style="width:60%" placeholder="Type what you want to know">
+            </div>
+            <br>
+            <div id="question_descr">
+            <label for="description" style="float:left;width:20%">Description: </label><input type="text" name="description" class="form-control" style="width:60%" placeholder="Brief description of your question">
+            </div>
+            <br>
+            <label for="option1" id="label1" style="float:left;width:20%">Pick a Category: </label>
+            <div style="position:relative;">
+                <select class="selectpicker" id="category_pick">
+                    <option>Arts</option>
+                    <option>Music</option>
+                    <option>Sports</option>
+                    <option>Computers and technology</option>
+                    <option>Politics</option>
+                    <option>Yes-No</option>
+
+                </select>
+            </div>
+            <br>
+            <div id="option_1">
+            <label for="option1" id="label1" style="float:left;width:20%">Option 1: </label><input type="text" name="option1" class="form-control" id="option1" style="width:60%">
+            </div>
+            <br>
+            <div id="options">
+            <label for="option2" id="label2" style="float:left;width:20%">Option 2: </label><input type="text" name="option2" id="option2" class="form-control" style="width:60%;float:left"><button id="add_opt" class="btn add-more" type="button">+</button>
+            </div>
+            
+            <br><br><br>
+            <div>
+            <center>
+                <input type="submit" value="Make Poll" class="myButton" id="submit_form"> </div>
+            </center>
+        </div>
     </form>
+    <script src="{% static 'create_polls/javascript/bootstrap-select.js' %}"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $('.selectpicker').selectpicker();
+        $('#option_1').hide();
+        $('#options').hide();
+        $('#submit_form').hide();
+
+        var next = 2;
+        $(".add-more").click(function(e){
+            var addto = "#option" + next;
+            var addRemove = "#option" + (next);
+            next = next + 1;
+            var newIn = '<label for="option'+next+'" id="label'+next+'" style="float:left;width:20%">Options: </label><input type="text" name="option'+next+'" id="option'+next+'" class="form-control" style="width:60%;float:left">';
+            var newInput = $(newIn);
+            var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" >-</button></div><div id="field">';
+            var removeButton = $(removeBtn);
+            $(addto).after(newInput);
+            $(addRemove).after(removeButton);
+            $("#option" + next).attr('data-source',$(addto).attr('data-source'));
+            $("#count").val(next);
+            form_height = $('.question_form').height();
+            $('.question_form').height(form_height + 40);
+            
+            $('.remove-me').click(function(e){
+                $('.question_form').height(form_height - 20);                    
+                var optionNum = this.id.charAt(this.id.length-1);
+                var optionID = "#option" + optionNum;
+                var labelID = "#label" + optionNum;
+                $(this).remove();
+                $(labelID).remove();
+                $(optionID).remove();
+            });
+        });
+    $(function() {
+
+      $('.selectpicker').on('change', function(){
+        var selected = $(this).find("option:selected").val();
+        $("#category").val(selected);
+        if(selected=='Yes-No'){
+            console.log(selected);
+            $("#option1").val("Yes");
+            $("#option2").val("No");
+            $("#option1").prop("readonly", true);
+            $("#option2").prop("readonly", true);
+            $("#add_opt").hide();
+            $('#option_1').show("slow");
+            $('#options').show("slow");
+            $('#submit_form').show("slow");
+        }
+        else{
+            $("#option1").val("");
+            $("#option2").val("");
+            $("#option1").prop("readonly", false);
+            $("#option2").prop("readonly", false);
+            $("#add_opt").show();
+            $('#option_1').show("slow");
+            $('#options').show("slow");
+            $('#submit_form').show("slow");
+        }
+      });
+      
+});
+    });
+
+    </script>
 </body>
 </html>
